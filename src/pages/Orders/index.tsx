@@ -5,7 +5,13 @@ import { useIntl, FormattedMessage } from 'umi';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { ModalForm, ProFormText, ProFormTextArea } from '@ant-design/pro-form';
+import {
+  ModalForm,
+  ProFormText,
+  ProFormTextArea,
+  ProFormList,
+  ProFormGroup,
+} from '@ant-design/pro-form';
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import type { FormValueType } from './components/UpdateForm';
@@ -107,27 +113,32 @@ const TableList: React.FC = () => {
 
   const columns: ProColumns<API.RuleListItem>[] = [
     {
-      title: <FormattedMessage id="Mã đơn hàng" defaultMessage="Mã đơn hàng" />,
+      title: <FormattedMessage id="pages.order.orderId" />,
+      dataIndex: 'id',
+      hideInTable: true,
+    },
+    {
+      title: <FormattedMessage id="pages.order.orderId" />,
       dataIndex: 'orderId',
     },
     {
-      title: <FormattedMessage id="Tên đơn hàng" defaultMessage="Tên đơn hàng" />,
+      title: <FormattedMessage id="pages.order.orderName" />,
       dataIndex: 'name',
     },
     {
-      title: <FormattedMessage id="Mã khách hàng" defaultMessage="Mã khách hàng" />,
+      title: <FormattedMessage id="pages.order.customerName" />,
       dataIndex: 'customer',
       // valueType: 'textarea',
     },
     {
-      title: <FormattedMessage id="Thành tiền" defaultMessage="Thành tiền" />,
+      title: <FormattedMessage id="pages.order.total" />,
       dataIndex: 'totalAmountOutput',
       renderText: (text) => {
         return `${format.currency(text)} đ`;
       },
     },
     {
-      title: 'Ngày tạo',
+      title: <FormattedMessage id="pages.order.createDate" />,
       dataIndex: 'createDate',
       valueType: 'dateTime',
     },
@@ -137,11 +148,10 @@ const TableList: React.FC = () => {
     <PageContainer>
       <ProTable<API.RuleListItem, API.PageParams>
         headerTitle={intl.formatMessage({
-          id: 'pages.searchTable.title',
-          defaultMessage: 'Enquiry form',
+          id: 'pages.order.orderListing',
         })}
         actionRef={actionRef}
-        rowKey="key"
+        rowKey="id"
         search={{
           labelWidth: 120,
         }}
@@ -224,10 +234,9 @@ const TableList: React.FC = () => {
       )}
       <ModalForm
         title={intl.formatMessage({
-          id: 'pages.searchTable.createForm.newRule',
-          defaultMessage: 'New rule',
+          id: 'pages.order.createNew',
         })}
-        width="400px"
+        width="600px"
         visible={createModalVisible}
         onVisibleChange={handleModalVisible}
         onFinish={async (value) => {
@@ -244,18 +253,46 @@ const TableList: React.FC = () => {
           rules={[
             {
               required: true,
-              message: (
-                <FormattedMessage
-                  id="pages.searchTable.ruleName"
-                  defaultMessage="Rule name is required"
-                />
-              ),
+              message: <FormattedMessage id="pages.order.orderName" />,
             },
           ]}
-          width="md"
           name="name"
         />
-        <ProFormTextArea width="md" name="desc" />
+        <ProFormText
+          rules={[
+            {
+              required: true,
+              message: <FormattedMessage id="pages.order.customerName" />,
+            },
+          ]}
+          name="customer"
+        />
+        <ProFormList
+          name="products"
+          label="Thêm sản phẩm"
+          // initialValue={[
+          //   {
+          //     value: '333',
+          //     label: '333',
+          //   },
+          // ]}
+          copyIconProps={{
+            tooltipText: 'Sao chép',
+          }}
+          deleteIconProps={{
+            tooltipText: 'Xoá',
+          }}
+          creatorButtonProps={{
+            position: 'bottom',
+            creatorButtonText: 'Thêm mới',
+          }}
+        >
+          <ProFormGroup>
+            <ProFormText name="value" label="Tên sản phẩm" />
+            <ProFormText name="label" label="Giá" />
+          </ProFormGroup>
+        </ProFormList>
+        {/* <ProFormTextArea width="md" name="desc" /> */}
       </ModalForm>
       <UpdateForm
         onSubmit={async (value) => {

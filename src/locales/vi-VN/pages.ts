@@ -67,4 +67,11 @@ export default {
   'pages.searchTable.tenThousand': '0000',
   'pages.searchTable.batchDeletion': 'bacth deletion',
   'pages.searchTable.batchApproval': 'batch approval',
+  'pages.order.orderId': 'Mã đơn hàng',
+  'pages.order.orderName': 'Tên đơn hàng',
+  'pages.order.customerName': 'Tên khách hàng',
+  'pages.order.total': 'Thành tiền',
+  'pages.order.createDate': 'Ngày tạo',
+  'pages.order.orderListing': 'Danh sách đơn hàng',
+  'pages.order.createNew': 'Tạo mới',
 };

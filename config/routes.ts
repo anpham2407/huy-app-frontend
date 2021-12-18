@@ -43,10 +43,10 @@
     ],
   },
   {
-    name: 'list.table-list',
+    name: 'orders.title',
     icon: 'table',
-    path: '/list',
-    component: './TableList',
+    path: '/orders',
+    component: './Orders',
   },
   {
     path: '/',
