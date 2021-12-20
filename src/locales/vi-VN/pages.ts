@@ -74,4 +74,12 @@ export default {
   'pages.order.createDate': 'Ngày tạo',
   'pages.order.orderListing': 'Danh sách đơn hàng',
   'pages.order.createNew': 'Tạo mới',
+  'pages.order.productName': 'Tên sản phẩm',
+  'pages.order.product': 'Sản phẩm',
+  'pages.order.message.edit.success': 'Sửa đơn hàng thành công',
+  'pages.order.message.edit.fail': 'Sửa đơn hàng thất bại',
+  'pages.order.message.create.success': 'Tạo đơn hàng thành công',
+  'pages.order.message.create.fail': 'Tạo đơn hàng thất bại',
+  'pages.order.message.delete.success': 'Xoá đơn hàng thành công',
+  'pages.order.message.delete.fail': 'Xoá đơn hàng thất bại',
 };

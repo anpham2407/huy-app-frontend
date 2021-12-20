@@ -109,6 +109,21 @@ export const HttpService = {
       return handleError(err);
     }
   },
+  patch: async (path: string, data: any) => {
+    try {
+      const response = await fetch(`${BASE_API}${path}`, {
+        method: 'PATCH',
+        headers: getHeaders(),
+        body: JSON.stringify(data),
+      });
+      if (response.status !== 200) {
+        handleError(response);
+      }
+      return response.json();
+    } catch (err) {
+      return handleError(err);
+    }
+  },
   delete: async (path: string, data: any) => {
     try {
       const response = await fetch(`${BASE_API}${path}`, {

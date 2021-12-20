@@ -1,23 +1,25 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, message, Input, Drawer } from 'antd';
+import { Button, message, Input, Drawer, Space, Popconfirm } from 'antd';
 import React, { useState, useRef } from 'react';
-import { useIntl, FormattedMessage } from 'umi';
+import { useIntl, FormattedMessage, formatMessage } from 'umi';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import {
+import ProForm, {
   ModalForm,
   ProFormText,
   ProFormTextArea,
   ProFormList,
   ProFormGroup,
+  ProFormDigit,
 } from '@ant-design/pro-form';
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import type { FormValueType } from './components/UpdateForm';
 import UpdateForm from './components/UpdateForm';
 import { rule, addRule, updateRule, removeRule } from '@/services/ant-design-pro/api';
-import { getOrders } from '@/services/order/api';
+import { getOrders, createOrder, updateOrder, removeOrder } from '@/services/order/api';
+import { EditOutlined } from '@ant-design/icons';
 import { format } from '@/utils';
 
 /**
@@ -28,7 +30,7 @@ import { format } from '@/utils';
 const handleAdd = async (fields: API.RuleListItem) => {
   const hide = message.loading('正在添加');
   try {
-    await addRule({ ...fields });
+    await createOrder({ ...fields });
     hide();
     message.success('Added successfully');
     return true;
@@ -73,8 +75,12 @@ const handleUpdate = async (fields: FormValueType) => {
 const handleRemove = async (selectedRows: API.RuleListItem[]) => {
   const hide = message.loading('正在删除');
   if (!selectedRows) return true;
+  const sss = await removeOrder({
+    key: selectedRows.map((row) => row.key),
+  });
+  console.log('selectedRows', selectedRows);
   try {
-    await removeRule({
+    await removeOrder({
       key: selectedRows.map((row) => row.key),
     });
     hide();
@@ -111,6 +117,57 @@ const TableList: React.FC = () => {
    * */
   const intl = useIntl();
 
+  const form = (
+    <>
+      <ProFormText label={formatMessage({ id: 'pages.order.orderName' })} name="id" hidden />
+      <ProFormText
+        label={formatMessage({ id: 'pages.order.orderName' })}
+        rules={[
+          {
+            required: true,
+            message: <FormattedMessage id="pages.order.orderName" />,
+          },
+        ]}
+        name="name"
+      />
+      <ProFormText
+        label={formatMessage({ id: 'pages.order.customerName' })}
+        rules={[
+          {
+            required: true,
+            message: <FormattedMessage id="pages.order.customerName" />,
+          },
+        ]}
+        name="customer"
+      />
+      <ProFormList
+        name="products"
+        label={formatMessage({ id: 'pages.order.product' })}
+        copyIconProps={{
+          tooltipText: 'Sao chép',
+        }}
+        deleteIconProps={{
+          tooltipText: 'Xoá',
+        }}
+        creatorButtonProps={{
+          position: 'bottom',
+          creatorButtonText: 'Thêm mới',
+        }}
+      >
+        <ProFormGroup>
+          <ProFormText
+            width="xs"
+            name="name"
+            label={formatMessage({ id: 'pages.order.productName' })}
+          />
+          <ProFormDigit width="xs" name="quantity" label="Số lượng" />
+          <ProFormDigit width="xs" name="priceInput" label="Giá nhập" />
+          <ProFormDigit width="xs" name="priceOutput" label="Giá xuất" />
+        </ProFormGroup>
+      </ProFormList>
+    </>
+  );
+
   const columns: ProColumns<API.RuleListItem>[] = [
     {
       title: <FormattedMessage id="pages.order.orderId" />,
@@ -141,6 +198,60 @@ const TableList: React.FC = () => {
       title: <FormattedMessage id="pages.order.createDate" />,
       dataIndex: 'createDate',
       valueType: 'dateTime',
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (text, record) => (
+        <Space size="middle">
+          <ModalForm<{
+            name: string;
+            company: string;
+          }>
+            title="Sửa đơn hàng"
+            trigger={
+              <Button type="dashed" size="small">
+                <EditOutlined />
+                Sửa
+              </Button>
+            }
+            initialValues={record}
+            autoFocusFirstInput
+            modalProps={{
+              destroyOnClose: true,
+              onCancel: () => console.log('run'),
+            }}
+            onFinish={async (values) => {
+              const res = await updateOrder(values);
+              if (res.code === 1) {
+                message.success(formatMessage({ id: 'pages.order.message.edit.success' }));
+                actionRef?.current?.reload();
+                return true;
+              } else {
+                message.error(formatMessage({ id: 'pages.order.message.edit.fail' }));
+              }
+            }}
+          >
+            {form}
+          </ModalForm>
+          <Popconfirm
+            title="Title"
+            // visible={visible}
+            onConfirm={async () => {
+              const res = await removeOrder(record);
+              if (res.code === 1) {
+                message.success(formatMessage({ id: 'pages.order.message.delete.success' }));
+                actionRef?.current?.reload();
+              } else {
+                message.error(formatMessage({ id: 'pages.order.message.delete.fail' }));
+              }
+            }}
+            // onCancel={handleCancel}
+          >
+            <Button type="primary">Xoá</Button>
+          </Popconfirm>
+        </Space>
+      ),
     },
   ];
 
@@ -236,7 +347,7 @@ const TableList: React.FC = () => {
         title={intl.formatMessage({
           id: 'pages.order.createNew',
         })}
-        width="600px"
+        width="620px"
         visible={createModalVisible}
         onVisibleChange={handleModalVisible}
         onFinish={async (value) => {
@@ -249,50 +360,7 @@ const TableList: React.FC = () => {
           }
         }}
       >
-        <ProFormText
-          rules={[
-            {
-              required: true,
-              message: <FormattedMessage id="pages.order.orderName" />,
-            },
-          ]}
-          name="name"
-        />
-        <ProFormText
-          rules={[
-            {
-              required: true,
-              message: <FormattedMessage id="pages.order.customerName" />,
-            },
-          ]}
-          name="customer"
-        />
-        <ProFormList
-          name="products"
-          label="Thêm sản phẩm"
-          // initialValue={[
-          //   {
-          //     value: '333',
-          //     label: '333',
-          //   },
-          // ]}
-          copyIconProps={{
-            tooltipText: 'Sao chép',
-          }}
-          deleteIconProps={{
-            tooltipText: 'Xoá',
-          }}
-          creatorButtonProps={{
-            position: 'bottom',
-            creatorButtonText: 'Thêm mới',
-          }}
-        >
-          <ProFormGroup>
-            <ProFormText name="value" label="Tên sản phẩm" />
-            <ProFormText name="label" label="Giá" />
-          </ProFormGroup>
-        </ProFormList>
-        {/* <ProFormTextArea width="md" name="desc" /> */}
+        {form}
       </ModalForm>
       <UpdateForm
         onSubmit={async (value) => {

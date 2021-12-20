@@ -4,24 +4,27 @@ import { request } from 'umi';
 import { Request, Response } from 'express';
 import { HttpService } from '@/utils/http.service';
 
-/** 获取当前的用户 GET /api/currentUser */
+/** GET /api/getOrders */
 export async function getOrders(options?: { [key: string]: any }) {
   const resp = await HttpService.get('/order', options);
-  console.log('resp', resp);
-  // return request<Record<string, any>>('/order', {
-  //   method: 'GET',
-  //   ...(options || {}),
-  // });
   return resp;
 }
 
 // /** 退出登录接口 POST /api/login/outLogin */
-// export async function outLogin(options?: { [key: string]: any }) {
-//   return request<Record<string, any>>('/api/login/outLogin', {
-//     method: 'POST',
-//     ...(options || {}),
-//   });
-// }
+export async function createOrder(options?: { [key: string]: any }) {
+  const resp = await HttpService.post('/order', options);
+  return resp;
+}
+
+export async function updateOrder(options?: { [key: string]: any }) {
+  const resp = await HttpService.patch(`/order/${options?.id}`, options);
+  return resp;
+}
+
+export async function removeOrder(options?: { [key: string]: any }) {
+  const resp = await HttpService.delete(`/order/${options?.id}`);
+  return resp;
+}
 
 // /** 登录接口 POST /api/login/account */
 // export async function login(body: API.LoginParams, options?: { [key: string]: any }) {
