@@ -1,5 +1,16 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, message, Input, Drawer, Space, Popconfirm } from 'antd';
+import {
+  Button,
+  message,
+  Input,
+  Drawer,
+  Space,
+  Popconfirm,
+  Descriptions,
+  PageHeader,
+  Paragraph,
+  Row,
+} from 'antd';
 import React, { useState, useRef } from 'react';
 import { useIntl, FormattedMessage, formatMessage } from 'umi';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
@@ -19,7 +30,7 @@ import type { FormValueType } from './components/UpdateForm';
 import UpdateForm from './components/UpdateForm';
 import { rule, addRule, updateRule, removeRule } from '@/services/ant-design-pro/api';
 import { getOrders, createOrder, updateOrder, removeOrder } from '@/services/order/api';
-import { EditOutlined } from '@ant-design/icons';
+import { EditOutlined, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
 import { format } from '@/utils';
 
 /**
@@ -93,7 +104,7 @@ const handleRemove = async (selectedRows: API.RuleListItem[]) => {
   }
 };
 
-const TableList: React.FC = () => {
+const Orders: React.FC = () => {
   /**
    * @en-US Pop-up window of new window
    * @zh-CN 新建窗口的弹窗
@@ -116,6 +127,79 @@ const TableList: React.FC = () => {
    * @zh-CN 国际化配置
    * */
   const intl = useIntl();
+
+  const ProTTT = ({ data }) => {
+    console.log('data', data);
+
+    const content = (
+      <>
+        <Paragraph>
+          Ant Design interprets the color system into two levels: a system-level color system and a
+          product-level color system.
+        </Paragraph>
+        <Paragraph>
+          Ant Design&#x27;s design team preferred to design with the HSB color model, which makes it
+          easier for designers to have a clear psychological expectation of color when adjusting
+          colors, as well as facilitate communication in teams.
+        </Paragraph>
+      </>
+    );
+
+    const Content = ({ children, extraContent }) => (
+      <Row>
+        <div style={{ flex: 1 }}>{children}</div>
+        <div className="image">{extraContent}</div>
+      </Row>
+    );
+
+    return (
+      <div>
+        <div>
+          Sản phẩm
+          {data?.products.map((item) => {
+            <>
+              <div>{item?.name}</div>
+              <div>{item?.quantity}</div>
+              <div>{item?.priceInput}</div>
+              <div>{item?.priceOutput}</div>
+            </>;
+          })}
+        </div>
+        <div>
+          Tổng cộng
+          <div>Lợi nhuận sau thuế: {data?.profitAfterTaxes}</div>
+          <div>Lợi nhuận trước thuế: {data?.profitBeforeTaxes}</div>
+          <div>Tổng tiền nhập: {data?.totalAmountInput}</div>
+          <div>Tổng tiền xuất: {data?.totalAmountOutput}</div>
+          <div>Tổng tiền sau thưế: {data?.totalAmountAfterTaxes}</div>
+        </div>
+
+        <PageHeader
+          ghost={false}
+          // onBack={() => window.history.back()}
+          title={data?.orderId}
+          subTitle={data?.name}
+          extra={[
+            <Button key="3">In</Button>,
+            <Button key="2">Báo giá</Button>,
+            <Button key="1" type="primary">
+              Xuất hoá đơn
+            </Button>,
+          ]}
+        >
+          <Descriptions size="small" column={3}>
+            <Descriptions.Item label="Ngày tạo">{data?.createDate}</Descriptions.Item>
+            <Descriptions.Item label="Khách hàng">{data?.customer}</Descriptions.Item>
+            {/* <Descriptions.Item label="Remarks">
+              Gonghu Road, Xihu District, Hangzhou, Zhejiang, China
+            </Descriptions.Item> */}
+          </Descriptions>
+
+          <Content extraContent={<h1>ssss</h1>}>{content}</Content>
+        </PageHeader>
+      </div>
+    );
+  };
 
   const form = (
     <>
@@ -208,6 +292,20 @@ const TableList: React.FC = () => {
             name: string;
             company: string;
           }>
+            title="Chi tiết đơn hàng"
+            trigger={
+              <Button type="dashed" size="small">
+                <EyeOutlined />
+                Xem
+              </Button>
+            }
+          >
+            <ProTTT data={record} />
+          </ModalForm>
+          <ModalForm<{
+            name: string;
+            company: string;
+          }>
             title="Sửa đơn hàng"
             trigger={
               <Button type="dashed" size="small">
@@ -216,11 +314,11 @@ const TableList: React.FC = () => {
               </Button>
             }
             initialValues={record}
-            autoFocusFirstInput
-            modalProps={{
-              destroyOnClose: true,
-              onCancel: () => console.log('run'),
-            }}
+            // autoFocusFirstInput
+            // modalProps={{
+            //   destroyOnClose: true,
+            //   onCancel: () => console.log('run'),
+            // }}
             onFinish={async (values) => {
               const res = await updateOrder(values);
               if (res.code === 1) {
@@ -235,8 +333,7 @@ const TableList: React.FC = () => {
             {form}
           </ModalForm>
           <Popconfirm
-            title="Title"
-            // visible={visible}
+            title="Xoá đơn hàng?"
             onConfirm={async () => {
               const res = await removeOrder(record);
               if (res.code === 1) {
@@ -246,9 +343,11 @@ const TableList: React.FC = () => {
                 message.error(formatMessage({ id: 'pages.order.message.delete.fail' }));
               }
             }}
-            // onCancel={handleCancel}
           >
-            <Button type="primary">Xoá</Button>
+            <Button type="dashed" danger size="small">
+              <DeleteOutlined />
+              Xoá
+            </Button>
           </Popconfirm>
         </Space>
       ),
@@ -298,13 +397,13 @@ const TableList: React.FC = () => {
           };
         }}
         columns={columns}
-        rowSelection={{
-          onChange: (_, selectedRows) => {
-            setSelectedRows(selectedRows);
-          },
-        }}
+        // rowSelection={{
+        //   onChange: (_, selectedRows) => {
+        //     setSelectedRows(selectedRows);
+        //   },
+        // }}
       />
-      {selectedRowsState?.length > 0 && (
+      {/* {selectedRowsState?.length > 0 && (
         <FooterToolbar
           extra={
             <div>
@@ -342,7 +441,7 @@ const TableList: React.FC = () => {
             />
           </Button>
         </FooterToolbar>
-      )}
+      )} */}
       <ModalForm
         title={intl.formatMessage({
           id: 'pages.order.createNew',
@@ -410,4 +509,4 @@ const TableList: React.FC = () => {
   );
 };
 
-export default TableList;
+export default Orders;
