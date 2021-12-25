@@ -50,4 +50,5 @@ export default {
   'menu.editor.mind': 'Mind Editor',
   'menu.editor.koni': 'Koni Editor',
   'menu.orders.title': 'Đơn hàng',
+  'menu.customer.title': 'Khách hàng',
 };

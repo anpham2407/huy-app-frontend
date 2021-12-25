@@ -49,6 +49,12 @@
     component: './Orders',
   },
   {
+    name: 'customer.title',
+    icon: 'user',
+    path: '/customers',
+    component: './Customers',
+  },
+  {
     path: '/',
     redirect: '/orders',
   },

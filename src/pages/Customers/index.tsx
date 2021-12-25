@@ -97,7 +97,7 @@ const handleRemove = async (selectedRows: API.RuleListItem[]) => {
   }
 };
 
-const Orders: React.FC = () => {
+const Customers: React.FC = () => {
   /**
    * @en-US Pop-up window of new window
    * @zh-CN 新建窗口的弹窗
@@ -199,24 +199,21 @@ const Orders: React.FC = () => {
       hideInTable: true,
     },
     {
-      title: <FormattedMessage id="pages.order.orderId" />,
-      dataIndex: 'orderId',
-    },
-    {
-      title: <FormattedMessage id="pages.order.orderName" />,
+      title: <FormattedMessage id="pages.customer.name" />,
       dataIndex: 'name',
     },
     {
-      title: <FormattedMessage id="pages.order.customerName" />,
-      dataIndex: 'customer',
-      render: (dom) => dom?.label,
+      title: <FormattedMessage id="pages.customer.email" />,
+      dataIndex: 'email',
     },
     {
-      title: <FormattedMessage id="pages.order.total" />,
-      dataIndex: 'totalAmountOutput',
-      renderText: (text) => {
-        return `${format.currency(text)} đ`;
-      },
+      title: <FormattedMessage id="pages.customer.phone" />,
+      dataIndex: 'phone',
+    },
+    {
+      title: <FormattedMessage id="pages.customer.address" />,
+      dataIndex: 'address',
+      render: (dom) => dom,
     },
     {
       title: <FormattedMessage id="pages.order.createDate" />,
@@ -298,7 +295,7 @@ const Orders: React.FC = () => {
     <PageContainer>
       <ProTable<API.RuleListItem, API.PageParams>
         headerTitle={intl.formatMessage({
-          id: 'pages.order.orderListing',
+          id: 'pages.customer.customerListing',
         })}
         actionRef={actionRef}
         rowKey="id"
@@ -328,7 +325,7 @@ const Orders: React.FC = () => {
         ) => {
           // Here you need to return a Promise, and you can transform the data before returning it
           // If you need to transform the parameters you can change them here
-          const msg = await getOrders({
+          const msg = await getCustomers({
             limit: params.pageSize,
             page: params.current,
           });
@@ -449,4 +446,4 @@ const Orders: React.FC = () => {
   );
 };
 
-export default Orders;
+export default Customers;

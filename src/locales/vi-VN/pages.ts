@@ -82,4 +82,9 @@ export default {
   'pages.order.message.create.fail': 'Tạo đơn hàng thất bại',
   'pages.order.message.delete.success': 'Xoá đơn hàng thành công',
   'pages.order.message.delete.fail': 'Xoá đơn hàng thất bại',
+  'pages.customer.customerListing': 'Danh sách khách hàng',
+  'pages.customer.name': 'Tên khách hàng',
+  'pages.customer.email': 'Email',
+  'pages.customer.phone': 'Điện thoại',
+  'pages.customer.address': 'Địa chỉ',
 };
